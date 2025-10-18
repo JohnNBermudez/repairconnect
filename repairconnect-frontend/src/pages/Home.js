@@ -15,6 +15,14 @@ function Home() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // ✅ Reset Modal State
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resetSuccess, setResetSuccess] = useState("");
+
   // ✅ LOGIN
   async function handleLogin(e) {
     e.preventDefault();
@@ -82,9 +90,37 @@ function Home() {
       setEmail("");
       setPassword("");
       setRole("customer");
-      console.log({name, email, password, role });
+      console.log({ name, email, password, role });
     } catch (e) {
       setError(e.message);
+    }
+  }
+
+  // ✅ RESET PASSWORD
+  async function handleResetPassword(e) {
+    e.preventDefault();
+    setResetError("");
+    setResetSuccess("");
+
+    if (newPassword !== confirmPassword) {
+      setResetError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail, newPassword }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Password reset failed.");
+
+      setResetSuccess("Password successfully reset. You can now log in.");
+      setTimeout(() => setShowResetModal(false), 2000);
+    } catch (err) {
+      setResetError(err.message);
     }
   }
 
@@ -100,7 +136,9 @@ function Home() {
           <p className={styles.subtitle}>Register</p>
           <form className={styles.form} onSubmit={handleRegister}>
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="name">Name</label>
+              <label className={styles.label} htmlFor="name">
+                Name
+              </label>
               <input
                 id="name"
                 className={styles.input}
@@ -110,8 +148,11 @@ function Home() {
                 required
               />
             </div>
+
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="email">Email</label>
+              <label className={styles.label} htmlFor="email">
+                Email
+              </label>
               <input
                 id="email"
                 className={styles.input}
@@ -121,8 +162,11 @@ function Home() {
                 required
               />
             </div>
+
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="password">Password</label>
+              <label className={styles.label} htmlFor="password">
+                Password
+              </label>
               <input
                 id="password"
                 className={styles.input}
@@ -132,8 +176,11 @@ function Home() {
                 required
               />
             </div>
+
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="role">Role</label>
+              <label className={styles.label} htmlFor="role">
+                Role
+              </label>
               <select
                 id="role"
                 className={styles.input}
@@ -144,10 +191,12 @@ function Home() {
                 <option value="provider">Provider</option>
               </select>
             </div>
+
             <button className={styles.submitButton} type="submit">
               Register
             </button>
           </form>
+
           <p>
             Already have an account?{" "}
             <button
@@ -164,7 +213,9 @@ function Home() {
           <p className={styles.subtitle}>Sign-in</p>
           <form className={styles.form} onSubmit={handleLogin}>
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="email">Email</label>
+              <label className={styles.label} htmlFor="email">
+                Email
+              </label>
               <input
                 id="email"
                 className={styles.input}
@@ -174,8 +225,11 @@ function Home() {
                 required
               />
             </div>
+
             <div className={styles.inputGroup}>
-              <label className={styles.label} htmlFor="password">Password</label>
+              <label className={styles.label} htmlFor="password">
+                Password
+              </label>
               <input
                 id="password"
                 className={styles.input}
@@ -185,10 +239,25 @@ function Home() {
                 required
               />
             </div>
+
             <button className={styles.submitButton} type="submit">
               Sign In
             </button>
           </form>
+
+          {/* ✅ Forgot Password link */}
+          <p
+            style={{
+              color: "#007bff",
+              cursor: "pointer",
+              textDecoration: "underline",
+              marginTop: "10px",
+            }}
+            onClick={() => setShowResetModal(true)}
+          >
+            Forgot Password?
+          </p>
+
           <p>
             Don’t have an account?{" "}
             <button
@@ -203,6 +272,58 @@ function Home() {
       )}
 
       {error && <p className={styles.error}>{error}</p>}
+
+      {/* ✅ Reset Password Modal */}
+      {showResetModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h2 className={styles.modalTitle}>Reset Password</h2>
+
+            {resetError && <p className={styles.error}>{resetError}</p>}
+            {resetSuccess && <p className={styles.success}>{resetSuccess}</p>}
+
+            <form onSubmit={handleResetPassword}>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                required
+                className={styles.modalInput}
+              />
+
+              <input
+                type="password"
+                placeholder="New password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                className={styles.modalInput}
+              />
+
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className={styles.modalInput}
+              />
+
+              <button type="submit" className={styles.modalButtonPrimary}>
+                Reset Password
+              </button>
+            </form>
+
+            <button
+              onClick={() => setShowResetModal(false)}
+              className={styles.modalButtonSecondary}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
