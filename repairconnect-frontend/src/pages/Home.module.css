@@ -116,3 +116,88 @@
   font-size: 0.9rem;
   color: #dc2626; /* red-600 */
 }
+
+/* Overlay background */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Title */
+.modalTitle {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Inputs */
+.modalInput {
+  display: block;
+  width: 95%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* Primary button */
+.modalButtonPrimary {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.modalButtonPrimary:hover {
+  background-color: #0056b3;
+}
+
+/* Secondary button */
+.modalButtonSecondary {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.modalButtonSecondary:hover {
+  background-color: #5a6268;
+}
+
+/* Success & Error text */
+.success {
+  color: green;
+  font-weight: 500;
+}
+
+.error {
+  color: red;
+  font-weight: 500;
+}
