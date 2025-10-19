@@ -285,7 +285,7 @@ function AdminDashboard() {
                 </thead>
                 <tbody>
                   {/* Filter users to display only providers with a 'pending' status. */}
-                  {users.filter(user => user.role === 'provider' && user.status === 'pending').map((user) => {
+                  {users.map((user) => {
                     const isActive = user.status === "active" || !user.status;
                     const isSuspended = user.status === "suspended";
                     const isBanned = user.status === "banned";
