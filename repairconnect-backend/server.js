@@ -212,7 +212,7 @@ app.put("/admin/users/:id/approve", requireAuth, requireAdmin, async (req, res) 
   try {
     const approved = await sql`
       UPDATE users
-      SET status = 'approved'
+      SET status = 'active'
       WHERE id = ${userId} AND role = 'provider'
       RETURNING id, status
     `;
