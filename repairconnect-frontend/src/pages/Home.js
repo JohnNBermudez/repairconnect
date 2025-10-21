@@ -1,10 +1,10 @@
 // src/pages/Home.js
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // ✅ named import
+import jwtDecode from "jwt-decode";
 import styles from "./Home.module.css";
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = "http://localhost:8081";
 
 function Home() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -21,32 +21,33 @@ function Home() {
     setError("");
 
     try {
-      // Try admin first
-      let res = await fetch(`${API_BASE}/auth/admin/login`, {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      let data = await res.json();
+      const data = await res.json();
 
-      if (res.ok) {
-        localStorage.setItem("rc_token", data.token);
-        return navigate("/admin/dashboard");
-      }
+      if (res.ok && data.token) {
+        localStorage.setItem("token", data.token);
 
-      // Fallback: customer/provider
-      res = await fetch(`${API_BASE}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      data = await res.json();
-
-      if (res.ok) {
-        localStorage.setItem("rc_token", data.token);
-
-        const decoded = jwtDecode(data.token);
-        console.log("Decoded token:", decoded);
+        try {
+          const decoded = jwtDecode(data.token);
+          console.log("Decoded token:", decoded);
+          
+          // Navigate based on role
+          if (decoded.role === 'provider') {
+            return navigate('/provider/dashboard');
+          } else if (decoded.role === 'customer') {
+            return navigate('/customer/dashboard');
+          } else {
+            throw new Error('Invalid role');
+          }
+        } catch (error) {
+          console.error('Token decode error:', error);
+          setError('Invalid login response');
+          localStorage.removeItem('token');
+        }
 
         if (decoded.role === "provider") {
           return navigate("/provider/dashboard");
